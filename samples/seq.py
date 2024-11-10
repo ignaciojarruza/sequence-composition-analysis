@@ -12,7 +12,7 @@ sequence.count("A")
 sequence.count("G")
 
 # count_overlap() example
-sequenceOverlap = "AAAA"
+sequenceOverlap = Seq("AAAA")
 sequenceOverlap.count_overlap("AA") # returns 3 instead of 2 (nonoverlap)
 
 # complement() and reversecomplement()
