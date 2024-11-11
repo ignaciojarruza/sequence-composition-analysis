@@ -1,11 +1,8 @@
 from Bio import SeqIO
 
-
 with open("samples/human.protein.fasta") as handle:
     for record in SeqIO.parse(handle, "fasta"):
         sequence = str(record.seq)
-        
-
 
         g_count = sequence.count("G")
         t_count = sequence.count("T")
