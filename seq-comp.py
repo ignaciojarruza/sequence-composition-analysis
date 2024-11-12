@@ -141,16 +141,9 @@ def visualize_dinuc_heatmap(file_path: str, file_format: str):
                 if dinuc in dinuc_counts:
                     dinuc_counts[dinuc] += 1
 
-        # Calculate total dinucleotides counted
         total_dinucleotides = sum(dinuc_counts.values())
-
-        # Convert counts to frequencies
         dinucleotide_frequencies = {dinuc: count / total_dinucleotides for dinuc, count in dinuc_counts.items()}
-
-        # Reshape frequencies into a 4x4 matrix for plotting
         freq_matrix = np.array([dinucleotide_frequencies[dinuc] for dinuc in dinucleotides]).reshape(4, 4)
-
-        # Plot heatmap
         plt.figure(figsize=(8, 6))
         sns.heatmap(freq_matrix, annot=True, xticklabels=['A', 'T', 'G', 'C'], yticklabels=['A', 'T', 'G', 'C'])
         plt.title("Dinucleotide Frequency Heatmap")
