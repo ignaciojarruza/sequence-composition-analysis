@@ -13,11 +13,11 @@ with Typer, this application is designed for ease of use and effective sequence 
 
 - Python >= 3.8
 - Packages:
-- - Typer
-- - Biopython
-- - NumPy
-- - Matplotlib
-- - Seaborn
+  - Typer
+  - Biopython
+  - NumPy
+  - Matplotlib
+  - Seaborn
     You can quickly install all packages by running the following command:
 
 ```
