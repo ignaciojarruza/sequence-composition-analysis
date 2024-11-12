@@ -1,37 +1,11 @@
-from Bio import SeqIO
-from collections import Counter
-import numpy as np
+import typer
 import sys
+from Bio import SeqIO
 
-def sequence_statistics_overall(file_path: str, file_format: str):
-    try:
-        sequences = list(SeqIO.parse(file_path, file_format))
+app = typer.Typer()
 
-        # Basic statistics
-        total_sequences = len(sequences)
-        sequence_lengths = [len(record.seq) for record in sequences]
-        gc_contents = [(record.seq.count("G") + record.seq.count("C")) / len(record.seq) * 100 for record in sequences]
-        # calculate nucleotide composition across all sequences
-        nucleotide_counts = Counter()
-        for record in sequences:
-            nucleotide_counts.update(record.seq)
-
-        # General Stats Print-out 
-        print(f"Total Sequences: {total_sequences}")
-        print(f"Average Sequence Length: {np.mean(sequence_lengths):.2f}")
-        print(f"Minimum Sequence Length: {np.min(sequence_lengths)}")
-        print(f"Maximum Sequence Length: {np.max(sequence_lengths)}")
-        print(f"Average GC Content: {np.mean(gc_contents):.2f}%")
-        print("Nucleotide Count:")
-        for nucleotide, count in nucleotide_counts.items():
-            print(f"{nucleotide}: {count}")
-    except FileNotFoundError:
-        print("File not found.")
-        sys.exit(1)
-    except ValueError:
-        print("Format not supported. Please execute -h for supported file formats.")
-
-def sequence_statistics_iteratively(file_path: str, file_format: str):
+@app.command()
+def overall_stats(file_path: str, file_format: str):
     try:
         with open(file_path) as handle:
             for record in SeqIO.parse(handle, file_format):
@@ -66,14 +40,9 @@ def sequence_statistics_iteratively(file_path: str, file_format: str):
     except ValueError:
         print("Format not supported. Please execute -h for supported file formats.")
 
-if len(sys.argv) < 4:
-    print("Invalid command length, usage: python3 seq-comp.py command file_path file_format")
-    sys.exit(1)
-if sys.argv[1] == "iter":
-    sequence_statistics_iteratively(sys.argv[2], sys.argv[3])
-elif sys.argv[1] == "whole":
-    sequence_statistics_overall(sys.argv[2], sys.argv[3])
-else:
-    print("Invalid command, usage: python3 seq-comp.py command file_path file_format")
-    print("Supported seq-comp commands are: [iter, whole]")
-    sys.exit(1)
+@app.command()
+def per_seq_stats():
+    print("")
+
+if __name__ == "__main__":
+    app()
