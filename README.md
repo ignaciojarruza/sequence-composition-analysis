@@ -48,7 +48,7 @@ python3 seq-comp.py --help
 
 ## Commands
 
-Below are descriptions and examples for each command available in the application:
+Sample outputs for each of the following commands can be found in the `/samples/` folder. Below are descriptions and examples for each command available in the application:
 
 1. `per-seq-stats`: calculates nucleotide composition and content ratios for each sequence in the provided file
 

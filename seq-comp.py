@@ -10,6 +10,31 @@ app = typer.Typer()
 
 @app.command()
 def per_seq_stats(file_path: str, file_format: str):
+    '''
+    Calculate per-sequence nucleotide statistics for a given file.
+
+    This command reads a DNA sequence file in the specified format and calculates nucleotide counts (A, T, C, G), GC and AT content 
+    percentages, and various nucleotide ratios.
+    Each sequence's statistics are printed separately, including:
+    - GC and AT content percentages
+    - A/T and G/C ratios
+    - Purine/Pyrimidine ratio
+    - GC/AT ratio
+
+    Parameters:
+    file_path : str
+        The path to the DNA sequence file (e.g., 'human.protein.fasta').
+        
+    file_format : str
+        The format of the sequence file (e.g., 'fasta', 'fastq'). Refer to Biopython's SeqIO module for supported formats.
+
+    Raises:
+    FileNotFoundError:
+        If the specified file path does not exist.
+    
+    ValueError:
+        If the specified file format is unsupported.
+    '''
     try:
         with open(file_path) as handle:
             for record in SeqIO.parse(handle, file_format):
@@ -29,26 +54,48 @@ def per_seq_stats(file_path: str, file_format: str):
                 gc_ac_ratio = (g_count + c_count) / (a_count + t_count) if (a_count + t_count) != 0 else 0
 
                 # Print-Out
-                print(f"Sequence ID: {record.id}")
-                print(f"A: {a_count}, T {t_count}, C: {c_count}, G:{g_count}")
-                print(f"GC Content: {gc_content:.2f}%")
-                print(f"AT Content: {at_content:.2f}%")
-                print(f"A/T Ratio: {at_ratio}")
-                print(f"G/C Ratio: {gc_ratio}")
-                print(f"Purine/Pyrimidine Ratio: {purine_pyrimidine_ratio}")
-                print(f"GC/AT Ratio: {gc_ac_ratio}")
-                print("--------------------------------------------------------")
+                typer.echo(f"Sequence ID: {record.id}")
+                typer.echo(f"A: {a_count}, T {t_count}, C: {c_count}, G:{g_count}")
+                typer.echo(f"GC Content: {gc_content:.2f}%")
+                typer.echo(f"AT Content: {at_content:.2f}%")
+                typer.echo(f"A/T Ratio: {at_ratio}")
+                typer.echo(f"G/C Ratio: {gc_ratio}")
+                typer.echo(f"Purine/Pyrimidine Ratio: {purine_pyrimidine_ratio}")
+                typer.echo(f"GC/AT Ratio: {gc_ac_ratio}")
+                typer.echo("--------------------------------------------------------")
     except FileNotFoundError:
-        print("File not found.")
-        sys.exit(1)
+        typer.echo("File not found.", err=True)
+        raise typer.Exit(code=1)
     except ValueError:
-        print("Format not supported. Please execute -h for supported file formats.")
+        typer.echo("Format not supported. Please execute -h for supported file formats.", err=True)
 
 @app.command()
 def overall_stats(file_path: str, file_format: str):
+    '''
+    Calculate and display overall nucleotide statistics for a given file.
+
+    This command provides an overview of the DNA sequences in the specified file, including:
+    - Total number of sequences
+    - Average, minimum, and maximum sequence lengths
+    - Average GC content percentage across all sequences
+    - Nucleotide counts across all sequences (A, T, C, G, etc.)
+
+    Parameters:
+    file_path : str
+        The path to the DNA sequence file (e.g., 'human.protein.fasta').
+        
+    file_format : str
+        The format of the sequence file (e.g., 'fasta', 'fastq'). Refer to Biopython's SeqIO module for supported formats.
+
+    Raises:
+    FileNotFoundError:
+        If the specified file path does not exist.
+    
+    ValueError:
+        If the specified file format is unsupported.
+    '''
     try:
         sequences = list(SeqIO.parse(file_path, file_format))
-
         # Basic statistics
         total_sequences = len(sequences)
         sequence_lengths = [len(record.seq) for record in sequences]
@@ -59,22 +106,37 @@ def overall_stats(file_path: str, file_format: str):
             nucleotide_counts.update(record.seq)
 
         # General Stats Print-out 
-        print(f"Total Sequences: {total_sequences}")
-        print(f"Average Sequence Length: {np.mean(sequence_lengths):.2f}")
-        print(f"Minimum Sequence Length: {np.min(sequence_lengths)}")
-        print(f"Maximum Sequence Length: {np.max(sequence_lengths)}")
-        print(f"Average GC Content: {np.mean(gc_contents):.2f}%")
-        print("Nucleotide Count:")
+        typer.echo(f"Total Sequences: {total_sequences}")
+        typer.echo(f"Average Sequence Length: {np.mean(sequence_lengths):.2f}")
+        typer.echo(f"Minimum Sequence Length: {np.min(sequence_lengths)}")
+        typer.echo(f"Maximum Sequence Length: {np.max(sequence_lengths)}")
+        typer.echo(f"Average GC Content: {np.mean(gc_contents):.2f}%")
+        typer.echo("Nucleotide Count:")
         for nucleotide, count in nucleotide_counts.items():
-            print(f"{nucleotide}: {count}")
+            typer.echo(f"{nucleotide}: {count}")
     except FileNotFoundError:
-        print("File not found.")
-        sys.exit(1)
+        typer.echo("File not found.", err=True)
+        raise typer.Exit(code=1)
     except ValueError:
-        print("Format not supported. Please execute -h for supported file formats.")
+        typer.echo("Format not supported. Please execute -h for supported file formats.", err=True)
 
 @app.command()
 def visualize_nuc_bar(file_path: str, file_format: str):
+    '''
+    Parameters:
+    file_path : str
+        The path to the DNA sequence file (e.g., 'human.protein.fasta').
+        
+    file_format : str
+        The format of the sequence file (e.g., 'fasta', 'fastq'). Refer to Biopython's SeqIO module for supported formats.
+
+    Raises:
+    FileNotFoundError:
+        If the specified file path does not exist.
+    
+    ValueError:
+        If the specified file format is unsupported.
+    '''
     try:
         sequences = list(SeqIO.parse(file_path, file_format))
         nucleotide_counts = Counter()
@@ -91,13 +153,33 @@ def visualize_nuc_bar(file_path: str, file_format: str):
             plt.text(i, count, f'{count:,}', ha='center', va='bottom')
         plt.show()
     except FileNotFoundError:
-        print("File not found.")
-        sys.exit(1)
+        typer.echo("File not found.", err=True)
+        raise typer.Exit(code=1)
     except ValueError:
-        print("Format not supported. Please execute -h for supported file formats.")
+        typer.echo("Format not supported. Please execute -h for supported file formats.", err=True)
 
 @app.command()
 def visualize_gc_histo(file_path: str, file_format: str):
+    '''
+    Generate and display a bar chart of nucleotide composition in the DNA sequences.
+
+    This command reads DNA sequences from the specified file, counts occurrences of each nucleotide (A, T, C, G), and 
+    visualize the counts in a bar chart. Each nucleotide is displayed with a distinct color.
+
+    Parameters:
+    file_path : str
+        The path to the DNA sequence file (e.g., 'human.protein.fasta').
+        
+    file_format : str
+        The format of the sequence file (e.g., 'fasta', 'fastq'). Refer to Biopython's SeqIO module for supported formats.
+
+    Raises:
+    FileNotFoundError:
+        If the specified file path does not exist.
+    
+    ValueError:
+        If the specified file format is unsupported.
+    '''
     try:
         sequences = list(SeqIO.parse(file_path, file_format))
         gc_contents = [(record.seq.count("G") + record.seq.count("C")) / len(record.seq) * 100 for record in sequences]
@@ -107,13 +189,33 @@ def visualize_gc_histo(file_path: str, file_format: str):
         plt.ylabel("Frequency")
         plt.show()
     except FileNotFoundError:
-        print("File not found.")
-        sys.exit(1)
+        typer.echo("File not found.", err=True)
+        raise typer.Exit(code=1)
     except ValueError:
-        print("Format not supported. Please execute -h for supported file formats.")
+        typer.echo("Format not supported. Please execute -h for supported file formats.", err=True)
 
 @app.command()
 def visualize_seq_len_dist(file_path: str, file_format: str):
+    '''
+    Generate and display a histogram of sequence lengths in the DNA sequences.
+
+    This command reads DNA sequences from the specified file, calculates their lengths,
+    and visualizes the distribution of sequence lengths in a histogram. A kernel density
+    estimate (KDE) curve is also displayed to show the distribution.
+
+    Parameters:
+    file_path : str
+        The path to the DNA sequence file (e.g., 'human.protein.fasta').
+        
+    file_format : str
+        The format of the sequence file (e.g., 'fasta', 'fastq'). Refer to Biopython's SeqIO module for supported formats.
+
+    Raises:
+    FileNotFoundError:
+        If the specified file path does not exist.
+    
+    ValueError:
+        If the specified file format is unsupported.'''
     try:
         sequences = list(SeqIO.parse(file_path, file_format))
         sequence_lengths = [len(record.seq) for record in sequences]
@@ -123,13 +225,35 @@ def visualize_seq_len_dist(file_path: str, file_format: str):
         plt.ylabel("Frequency")
         plt.show()
     except FileNotFoundError:
-        print("File not found.")
-        sys.exit(1)
+        typer.echo("File not found.", err=True)
+        raise typer.Exit(code=1)
     except ValueError:
-        print("Format not supported. Please execute -h for supported file formats.")
+        typer.echo("Format not supported. Please execute -h for supported file formats.", err=True)
 
 @app.command()
 def visualize_dinuc_heatmap(file_path: str, file_format: str):
+    '''
+    Generate and display a heatmap of dinucleotide frequencies in DNA sequences.
+
+    This command reads DNA sequences from the specified file, calculates the frequency
+    of each dinucleotide pair (e.g., AA, AT, GC, etc.), and visualizes the frequencies
+    as a heatmap. The heatmap shows the relationships between the first and second nucleotides
+    in each dinucleotide pair.
+    
+    Parameters:
+    file_path : str
+        The path to the DNA sequence file (e.g., 'human.protein.fasta').
+        
+    file_format : str
+        The format of the sequence file (e.g., 'fasta', 'fastq'). Refer to Biopython's SeqIO module for supported formats.
+
+    Raises:
+    FileNotFoundError:
+        If the specified file path does not exist.
+    
+    ValueError:
+        If the specified file format is unsupported.
+    '''
     try:
         sequences = list(SeqIO.parse(file_path, file_format))
         dinucleotides = ['AA', 'AT', 'AG', 'AC', 'TA', 'TT', 'TG', 'TC', 'GA', 'GT', 'GG', 'GC', 'CA', 'CT', 'CG', 'CC']
@@ -151,10 +275,10 @@ def visualize_dinuc_heatmap(file_path: str, file_format: str):
         plt.ylabel("First Nucleotide")
         plt.show()
     except FileNotFoundError:
-        print("File not found.")
-        sys.exit(1)
+        typer.echo("File not found.", err=True)
+        raise typer.Exit(code=1)
     except ValueError:
-        print("Format not supported. Please execute -h for supported file formats.")
+        typer.echo("Format not supported. Please execute -h for supported file formats.", err=True)
 
 if __name__ == "__main__":
     app()

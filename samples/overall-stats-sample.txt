@@ -1,0 +1,28 @@
+Total Sequences: 99937
+Average Sequence Length: 653.52
+Minimum Sequence Length: 24
+Maximum Sequence Length: 35991
+Average GC Content: 8.92%
+Nucleotide Count:
+M: 1382974
+L: 6425942
+H: 1737711
+T: 3527664
+N: 2366382
+R: 3691190
+I: 2801647
+G: 4165441
+D: 3126834
+F: 2266714
+K: 3844605
+P: 4177524
+S: 5604342
+Y: 1658945
+A: 4483022
+E: 4777624
+C: 1415928
+V: 3844408
+Q: 3240476
+W: 771259
+X: 66
+U: 76
